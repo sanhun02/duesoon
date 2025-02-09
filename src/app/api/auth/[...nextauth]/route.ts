@@ -5,6 +5,14 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import { connectMongo } from '../../../../../lib/mongodb';
 import User from '../../../../../lib/models/User';
 import bcrypt from 'bcryptjs';
+import { ObjectId } from 'mongoose';
+
+interface User {
+    id: string;
+    email: string;
+    classes: ObjectId[];
+    assignments: ObjectId[];
+}
 
 const authOptions: NextAuthOptions = {
     providers: [
@@ -21,7 +29,9 @@ const authOptions: NextAuthOptions = {
                     throw new Error('Missing email or password');
                 }
 
-                const user = await User.findOne({ email: credentials.email });
+                const user = await User.findOne({ email: credentials.email })
+                    .populate('classes')
+                    .populate('assignments');
                 if (!user) throw new Error('User not found');
 
                 const isValidPassword = await bcrypt.compare(
@@ -30,7 +40,14 @@ const authOptions: NextAuthOptions = {
                 );
                 if (!isValidPassword) throw new Error('Invalid password');
 
-                return user;
+                const userObj = user.toObject();
+
+                return {
+                    id: userObj._id as string,
+                    email: userObj.email,
+                    classes: userObj.classes,
+                    assignments: userObj.assignments,
+                } as User;
             },
         }),
         GoogleProvider({
