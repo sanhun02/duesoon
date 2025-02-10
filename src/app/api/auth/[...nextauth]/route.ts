@@ -5,13 +5,10 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import { connectMongo } from '../../../../../lib/mongodb';
 import User from '../../../../../lib/models/User';
 import bcrypt from 'bcryptjs';
-import { ObjectId } from 'mongoose';
 
 interface User {
     id: string;
     email: string;
-    classes: ObjectId[];
-    assignments: ObjectId[];
 }
 
 const authOptions: NextAuthOptions = {
@@ -30,8 +27,6 @@ const authOptions: NextAuthOptions = {
                 }
 
                 const user = await User.findOne({ email: credentials.email })
-                    .populate('classes')
-                    .populate('assignments');
                 if (!user) throw new Error('User not found');
 
                 const isValidPassword = await bcrypt.compare(
@@ -45,8 +40,6 @@ const authOptions: NextAuthOptions = {
                 return {
                     id: userObj._id as string,
                     email: userObj.email,
-                    classes: userObj.classes,
-                    assignments: userObj.assignments,
                 } as User;
             },
         }),

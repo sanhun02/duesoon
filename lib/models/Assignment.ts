@@ -6,6 +6,7 @@ export interface IAssignment extends Document {
     dueDate: Date;
     completed: boolean;
     classId: Schema.Types.ObjectId;
+    userId: Schema.Types.ObjectId
 }
 
 const assignmentSchema = new Schema<IAssignment>({
@@ -14,6 +15,7 @@ const assignmentSchema = new Schema<IAssignment>({
     dueDate: { type: Date, required: true },
     completed: { type: Boolean, default: false },
     classId: { type: Schema.Types.ObjectId, ref: 'Class', required: true },
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 });
 
 const Class = model<IAssignment>('Class', assignmentSchema);

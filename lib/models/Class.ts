@@ -7,6 +7,7 @@ export interface IClass extends Document {
     startTime: Date;
     endTime: Date;
     location: string;
+    userId: Schema.Types.ObjectId;
 }
 
 const classSchema = new Schema<IClass>({
@@ -16,6 +17,7 @@ const classSchema = new Schema<IClass>({
     startTime: { type: Date, required: true },
     endTime: { type: Date, required: true },
     location: { type: String, required: true },
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 });
 
 const Class = model<IClass>('Class', classSchema);
